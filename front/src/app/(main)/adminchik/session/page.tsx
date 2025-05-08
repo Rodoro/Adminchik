@@ -1,6 +1,12 @@
 import Header from '@/widgets/ui/layouts/Header/Header'
 import React from 'react'
 
+export async function generateMetadata() {
+    return {
+        title: 'Сесии',
+    }
+}
+
 export default function page() {
     return (
         <>
