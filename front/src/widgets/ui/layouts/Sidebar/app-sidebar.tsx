@@ -2,18 +2,12 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
-  // Bot,
-  // Command,
   Github,
   HardDrive,
-  // Frame,
-  GalleryVerticalEnd,
-  // Map,
-  // PieChart,
-  // Settings2,
+  Server,
   SquareTerminal,
+  ShieldAlert,
   Send,
 } from "lucide-react"
 
@@ -40,12 +34,12 @@ const data = {
   teams: [
     {
       name: "Adminchik",
-      logo: GalleryVerticalEnd,
+      logo: ShieldAlert,
       plan: "Admin panel",
     },
     {
       name: "GravityNode",
-      logo: AudioWaveform,
+      logo: Server,
       plan: "Servers",
     },
     // {
@@ -69,35 +63,13 @@ const data = {
           title: "Сесии",
           url: "/adminchik/session",
         },
-        // {
-        //   title: "Settings",
-        //   url: "#",
-        // },
       ],
     },
-    // {
-    //   title: "Логи",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
     {
       title: "Метрики",
       url: "/adminchik/metrics",
       icon: BookOpen,
+      isActive: true,
       items: [
         {
           title: "Логи",
@@ -121,7 +93,7 @@ const data = {
   projects: [
     {
       name: "GitHub",
-      url: "#",
+      url: "https://github.com/Rodoro/Adminchik",
       icon: Github,
     },
     // {
