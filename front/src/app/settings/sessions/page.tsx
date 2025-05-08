@@ -12,7 +12,7 @@ export default function page() {
         <>
             <Header
                 breadcrumbs={[
-                    { label: "Adminchik", href: "/adminchik" },
+                    { label: "Настройки", href: "/settings" },
                     { label: "Сесcии", isCurrent: true }
                 ]}
             />

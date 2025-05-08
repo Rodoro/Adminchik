@@ -56,7 +56,7 @@ const data = {
           url: "/adminchik/staff",
         },
         {
-          title: "Сесии",
+          title: "Сесcии",
           url: "/adminchik/session",
         },
       ],

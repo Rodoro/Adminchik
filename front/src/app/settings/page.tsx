@@ -3,7 +3,7 @@ import React from 'react'
 
 export async function generateMetadata() {
     return {
-        title: 'Сесcии',
+        title: 'Настройки',
     }
 }
 
@@ -12,8 +12,7 @@ export default function page() {
         <>
             <Header
                 breadcrumbs={[
-                    { label: "Adminchik", href: "/adminchik" },
-                    { label: "Сесcии", isCurrent: true }
+                    { label: "Настройки" },
                 ]}
             />
             <main className="flex flex-1 flex-col gap-4 p-4 pt-0">

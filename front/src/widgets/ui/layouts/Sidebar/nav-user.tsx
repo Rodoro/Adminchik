@@ -29,6 +29,7 @@ import {
   useSidebar,
 } from "@/shared/ui/layout/sidebar"
 import { useLogout } from "@/entites/Auth/lib/hooks/useLogout"
+import Link from "next/link"
 
 export function NavUser({
   user,
@@ -82,18 +83,23 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {/* TODO: Логику трем кнопкам */}
               <DropdownMenuItem>
-                <BadgeCheck />
-                Акаунт
+                <Link href={"/settings/profile"} className='flex w-full items-center gap-2'>
+                  <BadgeCheck />
+                  Акаунт
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Settings />
-                Настройки
+                <Link href={"/settings"} className='flex w-full items-center gap-2'>
+                  <Settings />
+                  Настройки
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
-                Уведомления
+                <Link href={"/settings/notifications"} className='flex w-full items-center gap-2'>
+                  <Bell />
+                  Уведомления
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
