@@ -24,7 +24,8 @@ import {
 } from "@/shared/ui/layout/sidebar"
 import { NavSecondary } from "./nav-secondary"
 
-// This is sample data.
+// TODO: Вынести в контент
+// TODO: Данные пользователя из сессии
 const data = {
   user: {
     name: "Rodoro",
@@ -42,11 +43,6 @@ const data = {
       logo: Server,
       plan: "Servers",
     },
-    // {
-    //   name: "Game",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
   ],
   navMain: [
     {
@@ -96,16 +92,11 @@ const data = {
       url: "https://github.com/Rodoro/Adminchik",
       icon: Github,
     },
-    // {
-    //   name: "Sales & Marketing",
-    //   url: "#",
-    //   icon: PieChart,
-    // },
-    // {
-    //   name: "Travel",
-    //   url: "#",
-    //   icon: Map,
-    // },
+    {
+      name: "API docs",
+      url: process.env.NEXT_PUBLIC_BACKEND + "/api",
+      icon: Server,
+    },
   ],
 }
 

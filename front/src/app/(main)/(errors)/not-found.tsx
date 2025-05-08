@@ -3,6 +3,12 @@ import { Button } from '@/shared/ui/form/button'
 import Header from '@/widgets/ui/layouts/Header/Header'
 import { useRouter } from 'next/navigation'
 
+export async function generateMetadata() {
+    return {
+        title: '404',
+    }
+}
+
 export default function NotFoundPage() {
     const router = useRouter()
     return (

@@ -4,9 +4,8 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  // CreditCard,
   LogOut,
-  // Sparkles,
+  Settings
 } from "lucide-react"
 
 import {
@@ -29,6 +28,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shared/ui/layout/sidebar"
+import { useLogout } from "@/entites/Auth/lib/hooks/useLogout"
 
 export function NavUser({
   user,
@@ -40,6 +40,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const logout = useLogout()
 
   return (
     <SidebarMenu>
@@ -79,30 +80,24 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              {/* TODO: Логику трем кнопкам */}
               <DropdownMenuItem>
                 <BadgeCheck />
                 Акаунт
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem> */}
+              <DropdownMenuItem>
+                <Settings />
+                Настройки
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 Уведомления
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
               <LogOut />
               Выйти
             </DropdownMenuItem>

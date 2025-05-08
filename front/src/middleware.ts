@@ -1,11 +1,48 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
+
+const PUBLIC_PATHS = ['/login']
+const PROTECTED_PATHS = ['/adminchik', '/dashboard']
 
 export function middleware(request: NextRequest) {
-    if (request.nextUrl.pathname === '/') {
+    const { pathname } = request.nextUrl
+    const session = request.cookies.get('session')?.value
+
+    if (pathname === '/') {
         const url = request.nextUrl.clone()
         url.pathname = '/adminchik'
+        return NextResponse.redirect(url)
+    }
 
+    if (
+        pathname.startsWith('/_next/') ||
+        pathname.startsWith('/api/') ||
+        pathname.startsWith('/static/') ||
+        pathname.includes('.')
+    ) {
+        return NextResponse.next()
+    }
+
+    const isPublicPath = PUBLIC_PATHS.some(path =>
+        pathname.startsWith(path)
+    )
+
+    if (isPublicPath) {
+        if (session) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/adminchik'
+            return NextResponse.redirect(url)
+        }
+        return NextResponse.next()
+    }
+
+    const isProtectedPath = PROTECTED_PATHS.some(path =>
+        pathname.startsWith(path)
+    )
+
+    if (isProtectedPath && !session) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('from', pathname)
         return NextResponse.redirect(url)
     }
 
@@ -13,5 +50,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/',
+    matcher: [
+        '/',
+        '/((?!_next/static|_next/image|favicon.ico).*)',
+    ],
 }

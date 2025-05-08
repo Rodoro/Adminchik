@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppSidebar } from "@/widgets/ui/layouts/Sidebar/app-sidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/shared/ui/layout/sidebar"
+import { Toaster } from "@/shared/ui/overlay/sonner";
 
 export const metadata: Metadata = {
   title: {
@@ -43,12 +39,8 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
+        <Toaster />
+        {children}
       </body>
     </html>
   );
