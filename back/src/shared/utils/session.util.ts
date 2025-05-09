@@ -2,14 +2,17 @@ import type { Staff } from "@/prisma/generated";
 import type { Request } from "express";
 import { InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { SessionMetadata } from "../types/session-metadata.types";
 
 export function saveSession(
     req: Request,
-    user: Staff
+    user: Staff,
+    metadata: SessionMetadata
 ) {
     return new Promise((resolve, reject) => {
         req.session.createdAt = new Date()
         req.session.staffId = user.id
+        req.session.metadata = metadata
 
         req.session.save(err => {
             if (err) {
