@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/shared/ui/overlay/sonner";
+import { SidebarProvider } from "@/shared/ui/layout/sidebar";
 
 export const metadata: Metadata = {
   title: {
@@ -39,8 +40,10 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <Toaster />
-        {children}
+        <SidebarProvider>
+          <Toaster />
+          {children}
+        </SidebarProvider>
       </body>
     </html>
   );

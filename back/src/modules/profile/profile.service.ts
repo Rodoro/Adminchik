@@ -13,17 +13,13 @@ export class ProfileService {
     ) { }
 
     public async changeAvatar(user: Staff, file: Upload) {
-        // if (user.avatar) {
-        //     await this.storageService.remove(user.avatar);
-        // }
-
         const chunks: Buffer[] = [];
         for await (const chunk of file.createReadStream()) {
             chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
 
-        const fileName = `/channels/${user.id}.webp`;
+        const fileName = `/avatars/${user.id + '/' + [...Array(3)].map(() => Math.random().toString(36)[2]).join('')}.webp`;
 
         if (file.filename && file.filename.endsWith('.gif')) {
             const processedBuffer = await sharp(buffer, { animated: true })

@@ -28,11 +28,6 @@ import { useRouter } from "next/navigation"
 // TODO: Вынести в контент
 // TODO: Данные пользователя из сессии
 const data = {
-  user: {
-    name: "Rodoro",
-    email: "rodoro@gravitynode.ru",
-    avatar: "/avatars/rodoro.jpg",
-  },
   navMain: [
     {
       title: "Профиль",
@@ -94,7 +89,7 @@ export function SettingsSidebar({ ...props }: React.ComponentProps<typeof Sideba
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -27,11 +27,6 @@ import { NavSecondary } from "./nav-secondary"
 // TODO: Вынести в контент
 // TODO: Данные пользователя из сессии
 const data = {
-  user: {
-    name: "Rodoro",
-    email: "rodoro@gravitynode.ru",
-    avatar: "/avatars/rodoro.jpg",
-  },
   teams: [
     {
       name: "Adminchik",
@@ -112,7 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -15,7 +15,7 @@ import { FormWrapper } from "@/shared/ui/form/FormWrapper"
 import { ChannelAvatar } from "@/shared/ui/branding/ChannelAvatar"
 
 export function ChangeAvatarForm() {
-    const { staff, isLoading } = useCurrentStaff()
+    const { staff, isLoading, refetch } = useCurrentStaff()
     const inputRef = useRef<HTMLInputElement>(null)
 
     const form = useForm<TypeUploadFileSchema>({
@@ -34,7 +34,7 @@ export function ChangeAvatarForm() {
         try {
             const { success } = await avatarApi.uploadAvatar(file)
             if (success) {
-                window.location.reload();
+                refetch()
                 toast.success('Изображение профиля успешно обновлено')
             }
         } catch (error) {
@@ -47,7 +47,7 @@ export function ChangeAvatarForm() {
         try {
             const { success } = await avatarApi.removeAvatar()
             if (success) {
-                window.location.reload();
+                refetch()
                 toast.success('Изображение профиля успешно удалено')
             }
         } catch (error) {

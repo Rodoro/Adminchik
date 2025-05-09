@@ -27,23 +27,25 @@ export default function SessionList() {
             ) : null}
 
             <TypographyH3 text='Активные сессии' className='mt-6 mb-6' />
-            {isLoading ? (
-                Array.from({ length: 3 }).map((_, index) => (
-                    <ToggleCardSkeleton key={index} className='mb-6' />
-                ))
-            ) : sessions?.length ? (
-                sessions.map((session) => (
-                    <SessionItem
-                        key={session.id}
-                        session={session}
-                        onTerminate={refetchSessions}
-                    />
-                ))
-            ) : (
-                <div className='text-muted-foreground'>
-                    Нету еще активных сессий
-                </div>
-            )}
+            {
+                // isLoading ? (
+                //     Array.from({ length: 3 }).map((_, index) => (
+                //         <ToggleCardSkeleton key={index} className='mb-6' />
+                //     ))
+                // ) : 
+                sessions?.length ? (
+                    sessions.map((session) => (
+                        <SessionItem
+                            key={session.id}
+                            session={session}
+                            onTerminate={refetchSessions}
+                        />
+                    ))
+                ) : (
+                    <div className='text-muted-foreground'>
+                        Нету еще активных сессий
+                    </div>
+                )}
         </>
     )
 }
