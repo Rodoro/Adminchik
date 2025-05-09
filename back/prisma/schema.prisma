@@ -13,4 +13,28 @@ model Staff {
 
     email    String @unique
     password String
+
+    tokens Token[]
+}
+
+model Token {
+    id String @id @default(uuid())
+
+    token     String    @unique
+    type      TokenType
+    expiresIn DateTime  @map("expires_in")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updateAt  DateTime @updatedAt @map("updated_at")
+
+    user   Staff?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String? @map("user_id")
+
+    @@map("tokens")
+}
+
+enum TokenType {
+    PASSWORD_RESET
+
+    @@map("token_types")
 }

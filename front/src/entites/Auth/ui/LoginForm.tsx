@@ -37,7 +37,11 @@ export default function LoginForm() {
         }
     }
     return (
-        <AuthWrapper heading="Вход">
+        <AuthWrapper
+            heading="Вход"
+            backButtonHref='/recovery'
+            backButtonLabel='Сбросить пароль'
+        >
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-y-3">
                     <FormField

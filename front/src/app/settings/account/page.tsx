@@ -3,7 +3,7 @@ import React from 'react'
 
 export async function generateMetadata() {
     return {
-        title: 'Профиль',
+        title: 'Акаунт',
     }
 }
 
@@ -13,7 +13,7 @@ export default function page() {
             <Header
                 breadcrumbs={[
                     { label: "Настройки", href: "/settings" },
-                    { label: "Профиль", isCurrent: true }
+                    { label: "Акаунт", isCurrent: true }
                 ]}
             />
             <main className="flex flex-1 flex-col gap-4 p-4 pt-0">

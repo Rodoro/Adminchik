@@ -35,14 +35,14 @@ const data = {
   },
   navMain: [
     {
-      title: "Акаунт",
+      title: "Профиль",
       url: "/settings",
-      icon: Settings,
+      icon: User2,
     },
     {
-      title: "Профиль",
-      url: "/settings/profile",
-      icon: User2,
+      title: "Акаунт",
+      url: "/settings/account",
+      icon: Settings,
     },
     {
       title: "Сесcии",

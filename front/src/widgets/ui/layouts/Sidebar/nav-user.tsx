@@ -84,7 +84,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href={"/settings/profile"} className='flex w-full items-center gap-2'>
+                <Link href={"/settings/account"} className='flex w-full items-center gap-2'>
                   <BadgeCheck />
                   Акаунт
                 </Link>
@@ -103,7 +103,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => logout()}>
+            <DropdownMenuItem onClick={() => logout()} className="cursor-pointer">
               <LogOut />
               Выйти
             </DropdownMenuItem>

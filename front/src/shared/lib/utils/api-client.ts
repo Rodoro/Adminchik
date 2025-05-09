@@ -40,10 +40,11 @@ export const apiClient = {
         return this.request(url, { method: 'GET' })
     },
 
-    post<T>(url: string, body?: unknown): Promise<T> {
+    post<T>(url: string, body?: unknown, headers?: Record<string, string>): Promise<T> {
         return this.request(url, {
             method: 'POST',
             body: JSON.stringify(body),
+            headers: headers ? { ...headers } : undefined
         })
     },
 

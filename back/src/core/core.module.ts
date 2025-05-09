@@ -5,6 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { StaffModule } from '../modules/staff/staff.module';
 import { SessionModule } from '../modules/session/session.module';
+import { MailModule } from '../modules/mail/mail.module';
+import { PasswordModule } from '../modules/password/password.module';
 
 @Module({
   imports: [
@@ -14,9 +16,11 @@ import { SessionModule } from '../modules/session/session.module';
     }),
     PrismaModule,
     RedisModule,
+    MailModule,
 
     StaffModule,
-    SessionModule
+    SessionModule,
+    PasswordModule
   ],
 })
 export class CoreModule { }
