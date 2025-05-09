@@ -7,6 +7,8 @@ import { StaffModule } from '../modules/staff/staff.module';
 import { SessionModule } from '../modules/session/session.module';
 import { MailModule } from '../modules/mail/mail.module';
 import { PasswordModule } from '../modules/password/password.module';
+import { MinioModule } from './minio/minio.module';
+import { ProfileModule } from '../modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -17,10 +19,12 @@ import { PasswordModule } from '../modules/password/password.module';
     PrismaModule,
     RedisModule,
     MailModule,
+    MinioModule,
 
     StaffModule,
     SessionModule,
-    PasswordModule
+    PasswordModule,
+    ProfileModule
   ],
 })
 export class CoreModule { }

@@ -14,7 +14,7 @@ import { Authorized } from "@/src/shared/decorators/authorized.decorator";
 export class StaffController {
     constructor(private readonly staffService: StaffService) { }
 
-    @Get('me/:id')
+    @Get('me')
     @ApiOperation({ summary: 'Get current staff member' })
     @ApiResponse({
         status: 200,

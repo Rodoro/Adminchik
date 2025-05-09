@@ -1,3 +1,4 @@
+"use client"
 import { useAuth } from '@/entites/Auth/lib/hooks/useAuth'
 import { useEffect, useState } from 'react'
 import { Staff } from '../../types/staff.types'
@@ -8,24 +9,39 @@ export const useCurrentStaff = () => {
     const [staff, setStaff] = useState<Staff | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
+    const refetch = async () => {
         if (!isAuthenticated) return
 
-        const fetchStaff = async () => {
-            setIsLoading(true)
-            try {
-                const currentStaff = await staffApi.getCurrent()
-                setStaff(currentStaff)
-            } catch (error) {
-                console.error('Ошибка при загрузке профиля:', error)
-                logout()
-            } finally {
-                setIsLoading(false)
-            }
+        setIsLoading(true)
+        try {
+            const currentStaff = await staffApi.getCurrent()
+            setStaff(currentStaff)
+            return currentStaff
+        } catch (err) {
+            throw err
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setStaff(null)
+            return
         }
 
-        fetchStaff()
+        refetch()
+    }, [isAuthenticated])
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            // logout()
+        }
     }, [isAuthenticated, logout])
 
-    return { staff, isLoading }
+    return {
+        staff,
+        isLoading,
+        refetch
+    }
 }

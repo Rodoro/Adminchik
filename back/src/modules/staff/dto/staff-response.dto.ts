@@ -17,6 +17,6 @@ export class StaffResponseDto {
     @Expose()
     email: string
 
-    @Exclude()
-    password: string
+    @Expose()
+    avatar: string
 }

@@ -4,13 +4,19 @@ import { toast } from 'sonner'
 export const apiClient = {
     async request<T>(url: string, config: RequestInit): Promise<T> {
         try {
+            const headers = new Headers({
+                'Accept': 'application/json',
+                ...config.headers
+            })
+
+            if (!(config.body instanceof FormData)) {
+                headers.set('Content-Type', 'application/json')
+            }
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}${url}`, {
                 ...config,
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...config.headers,
-                },
+                headers
             })
 
             if (response.status === 401 || response.status === 403) {
@@ -41,10 +47,11 @@ export const apiClient = {
     },
 
     post<T>(url: string, body?: unknown, headers?: Record<string, string>): Promise<T> {
+        const isFormData = body instanceof FormData
         return this.request(url, {
             method: 'POST',
-            body: JSON.stringify(body),
-            headers: headers ? { ...headers } : undefined
+            body: isFormData ? body : JSON.stringify(body),
+            headers
         })
     },
 
