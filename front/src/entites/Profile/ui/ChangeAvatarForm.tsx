@@ -121,5 +121,5 @@ export function ChangeAvatarForm() {
 }
 
 export function ChangeAvatarFormSkeleton() {
-    return <Skeleton className="h-52 w-full" />
+    return <Skeleton className="h-52 w-full mt-6" />
 }

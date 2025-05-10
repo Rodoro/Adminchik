@@ -1,4 +1,5 @@
 import { ChangeAvatarForm } from '@/entites/Profile/ui/ChangeAvatarForm'
+import { ChangeInfoForm } from '@/entites/Profile/ui/ChangeInfoForm'
 import { TypographyH2 } from '@/shared/ui/typography/TypographyH2'
 import { TypographyP } from '@/shared/ui/typography/TypographyP'
 import Header from '@/widgets/ui/layouts/Header/Header'
@@ -22,6 +23,7 @@ export default function SettingsPage() {
                 <TypographyH2 text='Профиль' />
                 <TypographyP className='' text='Настройте ваш профиль, обновите аватар, измените информацию о себе и добавьте ссылки на социальные сети.' />
                 <ChangeAvatarForm />
+                <ChangeInfoForm />
             </main>
         </>
     )

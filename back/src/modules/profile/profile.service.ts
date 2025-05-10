@@ -4,6 +4,7 @@ import { PrismaService } from "@/src/core/prisma/prisma.service";
 import { Upload } from "@/src/shared/interfaces/upload.interface";
 import { Injectable } from "@nestjs/common";
 import * as sharp from 'sharp';
+import { ChangeProfileInfoDto } from "./dto/change-profile-info.dto";
 
 @Injectable()
 export class ProfileService {
@@ -58,10 +59,22 @@ export class ProfileService {
         return true;
     }
 
-    public async getAvatarUrl(user: Staff) {
-        if (!user.avatar) {
-            return null;
-        }
-        return this.storageService.getUrl(user.avatar);
+    public async changeInfo(user: Staff, input: ChangeProfileInfoDto) {
+        const { firstName, midleName, lastName, displayName, bio } = input;
+
+        await this.prismaService.staff.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                firstName,
+                midleName,
+                lastName,
+                displayName,
+                bio
+            }
+        });
+
+        return true;
     }
 }

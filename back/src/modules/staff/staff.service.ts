@@ -30,7 +30,7 @@ export class StaffService {
     }
 
     async create(createStaffDto: CreateStaffDto): Promise<void> {
-        const { email, password } = createStaffDto;
+        const { email, password, displayName, firstName, lastName } = createStaffDto;
 
         const isUsernameExists = await this.prismaService.staff.findUnique({
             where: { email },
@@ -44,6 +44,9 @@ export class StaffService {
             data: {
                 email,
                 password: await hash(password),
+                displayName,
+                firstName,
+                lastName
             }
         });
     }

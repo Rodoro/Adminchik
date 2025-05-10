@@ -6,6 +6,8 @@ import {
     UploadedFile,
     UseInterceptors,
     Req,
+    Put,
+    Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
@@ -15,6 +17,7 @@ import { SuccessResponseDto } from './dto/success-response.dto';
 import { Staff } from '@/prisma/generated';
 import { Readable } from 'stream';
 import { FileValidationPipe } from '@/src/shared/pipes/file-validation.pipe';
+import { ChangeProfileInfoDto } from './dto/change-profile-info.dto';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -79,5 +82,14 @@ export class ProfileController {
             success: result,
             message: 'Avatar successfully removed',
         };
+    }
+
+    @Put('info')
+    @ApiOperation({ summary: 'Change info user' })
+    public async changeInfo(
+        @Req() req: { user: Staff },
+        @Body() input: ChangeProfileInfoDto
+    ) {
+        return await this.profileService.changeInfo(req.user, input);
     }
 }

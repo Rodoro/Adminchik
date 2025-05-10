@@ -11,10 +11,17 @@ datasource db {
 model Staff {
     id String @id @default(uuid())
 
-    avatar String?
+    avatar      String?
+    bio         String?
+    displayName String  @map("display_name")
 
-    email    String @unique
-    password String
+    firstName String  @map("first_name")
+    midleName String? @map("midle_name")
+    lastName  String  @map("last_name")
+
+    email      String  @unique
+    password   String
+    telegramId String? @unique @map("telegram_id")
 
     tokens Token[]
 }

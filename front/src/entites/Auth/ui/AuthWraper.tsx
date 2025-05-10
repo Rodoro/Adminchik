@@ -17,7 +17,7 @@ export default function AuthWrapper({
     backButtonHref
 }: PropsWithChildren<AuthWrapperProps>) {
     return (
-        <main className="flex min-h-screen items-center justify-center">
+        <main className="flex min-h-screen items-center justify-center w-full">
             <Card className="w-[450px]">
                 <CardHeader className="flex-row items-center justify-center gap-x-4">
                     <CardTitle>{heading}</CardTitle>

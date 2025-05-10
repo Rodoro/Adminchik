@@ -19,4 +19,16 @@ export class StaffResponseDto {
 
     @Expose()
     avatar: string
+
+    @Expose()
+    displayName: string
+
+    @Expose()
+    firstName: string
+    @Expose()
+    midleName: string
+    @Expose()
+    lastName: string
+    @Expose()
+    bio: string
 }
