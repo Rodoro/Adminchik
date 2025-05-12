@@ -24,6 +24,7 @@ export default function SettingsPage() {
                 <TypographyP className='' text='Настройте ваш профиль, обновите аватар, измените информацию о себе и добавьте ссылки на социальные сети.' />
                 <ChangeAvatarForm />
                 <ChangeInfoForm />
+                {/* TODO: Система привязки соц сетей */}
             </main>
         </>
     )

@@ -1,10 +1,13 @@
 import { PrismaService } from "@/src/core/prisma/prisma.service";
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { CreateStaffDto } from "./dto/create-staff.dto";
-import { hash } from "argon2";
+import { hash, verify } from "argon2";
 import { DeleteStaffDto } from "./dto/delete-staff.dto";
 import { plainToInstance } from "class-transformer";
 import { StaffResponseDto } from "./dto/staff-response.dto";
+import { Staff } from "@/prisma/generated";
+import { ChangeEmailDto } from "./dto/change-email.dto";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class StaffService {
@@ -63,6 +66,38 @@ export class StaffService {
 
         await this.prismaService.staff.delete({
             where: { email },
+        });
+    }
+
+    public async changeEmail(user: Staff, input: ChangeEmailDto): Promise<void> {
+        const { email } = input;
+
+        await this.prismaService.staff.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                email
+            }
+        });
+    }
+
+    public async changePassword(user: Staff, input: ChangePasswordDto): Promise<void> {
+        const { oldPassword, newPassword } = input;
+
+        const isValidPassword = await verify(user.password, oldPassword);
+
+        if (!isValidPassword) {
+            throw new UnauthorizedException('Неверный старый пароль');
+        }
+
+        await this.prismaService.staff.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: await hash(newPassword)
+            }
         });
     }
 }
