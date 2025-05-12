@@ -98,6 +98,11 @@ const data = {
       url: process.env.NEXT_PUBLIC_BACKEND + "/api",
       icon: Server,
     },
+    {
+      name: "Notification bot",
+      url: "https://web.telegram.org/a/#7387312661",
+      icon: Send,
+    },
   ],
 }
 

@@ -36,18 +36,14 @@ export class TelegramService extends Telegraf {
 				}
 			})
 
-			console.log(authToken)
-
 			if (!authToken) {
 				return await ctx.replyWithHTML(MESSAGES.invalidToken)
 			}
-			console.log('Есть')
 			const hasExpired = new Date(authToken.expiresIn) < new Date()
 
 			if (hasExpired || !authToken.userId) {
 				return await ctx.replyWithHTML(MESSAGES.invalidToken)
 			}
-			console.log('Не просрочен')
 
 			await this.connectTelegram(authToken.userId, chatId)
 

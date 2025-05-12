@@ -7,12 +7,12 @@ export const avatarApi = {
 
         formData.append('avatar', file, file.name);
 
-        console.log('Отправляемый файл:', {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: file.lastModified
-        });
+        // console.log('Отправляемый файл:', {
+        //     name: file.name,
+        //     size: file.size,
+        //     type: file.type,
+        //     lastModified: file.lastModified
+        // });
 
         try {
             await apiClient.post('/profile/avatar', formData);

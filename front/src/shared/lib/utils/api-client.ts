@@ -38,7 +38,6 @@ export const apiClient = {
     },
 
     clearSession() {
-        console.log('ELFKZTV RERE')
         document.cookie = 'session=; path=/; max-age=0;';
     },
 

@@ -29,8 +29,6 @@ export function ChangeAvatarForm() {
         const file = event.target.files?.[0]
         if (!file) return
 
-        console.log(file)
-
         try {
             const { success } = await avatarApi.uploadAvatar(file)
             if (success) {

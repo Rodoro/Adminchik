@@ -26,7 +26,6 @@ export function NewPasswordForm() {
     const { isSubmitting } = form.formState
 
     const onSubmit = async (data: TypeNewPasswordSchema) => {
-        console.log(token)
         if (!token) {
             toast.error('Неверный токен')
             return
