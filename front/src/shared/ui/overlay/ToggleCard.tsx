@@ -8,6 +8,7 @@ interface ToggleCardProps {
     description: string
     isDisabled?: boolean
     value: boolean
+    className?: string
     onChange: (value: boolean) => void
 }
 
@@ -16,10 +17,12 @@ export function ToggleCard({
     description,
     isDisabled,
     value,
-    onChange
+    onChange,
+    className
 }: ToggleCardProps) {
     return (
         <CardContainer
+            className={className}
             heading={heading}
             description={description}
             rightContent={

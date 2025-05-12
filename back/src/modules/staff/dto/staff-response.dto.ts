@@ -31,4 +31,12 @@ export class StaffResponseDto {
     lastName: string
     @Expose()
     bio: string
+    @Expose()
+    telegramId
+
+    @Expose()
+    notificationSettings: {
+        authLogin: boolean
+        passwordReset: boolean
+    }
 }

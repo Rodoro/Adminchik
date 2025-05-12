@@ -23,7 +23,41 @@ model Staff {
     password   String
     telegramId String? @unique @map("telegram_id")
 
+    notifications        Notification[]
+    notificationSettings NotificationSettings?
+
     tokens Token[]
+}
+
+model Notification {
+    id String @id @default(uuid())
+
+    message String
+    type    NotificationType
+    isRead  Boolean          @default(false) @map("is_read")
+
+    user   Staff?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String? @map("user_id")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("notifications")
+}
+
+model NotificationSettings {
+    id String @id @default(uuid())
+
+    authLogin     Boolean @default(true) @map("auth_login")
+    passwordReset Boolean @default(true) @map("password_reset")
+
+    user   Staff  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String @unique @map("user_id")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("notification_settings")
 }
 
 model Token {
@@ -44,6 +78,14 @@ model Token {
 
 enum TokenType {
     PASSWORD_RESET
+    TELEGRAM_AUTH
 
     @@map("token_types")
+}
+
+enum NotificationType {
+    AUTH_LOGIN
+    PASSWORD_RESET
+
+    @@map("notification_types")
 }

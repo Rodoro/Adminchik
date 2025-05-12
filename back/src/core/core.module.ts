@@ -9,6 +9,8 @@ import { MailModule } from '../modules/mail/mail.module';
 import { PasswordModule } from '../modules/password/password.module';
 import { MinioModule } from './minio/minio.module';
 import { ProfileModule } from '../modules/profile/profile.module';
+import { TelegramModule } from '../modules/telegram/telegram.module';
+import { NotificationSettingsModule } from '../modules/notification/notification-settings.module';
 
 @Module({
   imports: [
@@ -20,11 +22,13 @@ import { ProfileModule } from '../modules/profile/profile.module';
     RedisModule,
     MailModule,
     MinioModule,
+    TelegramModule,
 
     StaffModule,
     SessionModule,
     PasswordModule,
-    ProfileModule
+    ProfileModule,
+    NotificationSettingsModule,
   ],
 })
 export class CoreModule { }

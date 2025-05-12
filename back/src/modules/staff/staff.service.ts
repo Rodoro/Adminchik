@@ -17,7 +17,10 @@ export class StaffService {
 
     async me(id: string): Promise<StaffResponseDto> {
         const user = await this.prismaService.staff.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                notificationSettings: true
+            }
         });
 
         if (!user) {

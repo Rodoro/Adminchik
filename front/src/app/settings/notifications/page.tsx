@@ -1,3 +1,6 @@
+import { ChangeNotificationsSettingsForm } from '@/entites/Notification/ui/ChangeNotificationsSettingsForm'
+import { TypographyH2 } from '@/shared/ui/typography/TypographyH2'
+import { TypographyP } from '@/shared/ui/typography/TypographyP'
 import Header from '@/widgets/ui/layouts/Header/Header'
 import React from 'react'
 
@@ -16,13 +19,10 @@ export default function page() {
                     { label: "Уведомления", isCurrent: true }
                 ]}
             />
-            <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="aspect-video rounded-xl bg-muted/50" />
-                    <div className="aspect-video rounded-xl bg-muted/50" />
-                    <div className="aspect-video rounded-xl bg-muted/50" />
-                </div>
-                <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+            <main className="flex flex-1 flex-col pb-4 pt-0 px-8 max-w-5xl">
+                <TypographyH2 text='Уведомления' />
+                <TypographyP text='Настройте, как вы хотите получать уведомления по панели Adminchik и получайте их сразу в телеграмм канале.' />
+                <ChangeNotificationsSettingsForm />
             </main>
         </>
     )

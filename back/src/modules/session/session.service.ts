@@ -9,13 +9,15 @@ import { plainToInstance } from 'class-transformer';
 import { StaffResponseDto } from '../staff/dto/staff-response.dto';
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util';
 import { RedisService } from '@/src/core/redis/redis.service';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class SessionService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly configService: ConfigService,
-        private readonly redisService: RedisService
+        private readonly redisService: RedisService,
+        private readonly telegramService: TelegramService
     ) { }
 
     public async login(req: Request, loginStaffDto: LoginStaffDto, userAgent: string): Promise<StaffResponseDto> {
@@ -25,6 +27,9 @@ export class SessionService {
             where: {
                 email,
             },
+            include: {
+                notificationSettings: true
+            }
         });
 
         if (!user) {
@@ -38,6 +43,17 @@ export class SessionService {
         }
 
         const metadata = getSessionMetadata(req, userAgent)
+
+        if (
+            user.notificationSettings?.authLogin &&
+            user.telegramId
+        ) {
+            await this.telegramService.sendLoginStaff(
+                user.telegramId,
+                metadata
+            )
+        }
+
         await saveSession(req, user, metadata);
         return plainToInstance(StaffResponseDto, user);
     }
