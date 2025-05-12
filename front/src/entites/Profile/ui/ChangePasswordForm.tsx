@@ -63,7 +63,7 @@ export function ChangePasswordForm() {
                         control={form.control}
                         name="oldPassword"
                         render={({ field }) => (
-                            <FormItem className="px-5">
+                            <FormItem className="px-0 sm:px-5">
                                 <FormLabel>{"Старый пароль"}</FormLabel>
                                 <FormControl>
                                     <Input
@@ -83,7 +83,7 @@ export function ChangePasswordForm() {
                         control={form.control}
                         name="newPassword"
                         render={({ field }) => (
-                            <FormItem className="px-5">
+                            <FormItem className="px-0 sm:px-5">
                                 <FormLabel>{"Новый пароль"}</FormLabel>
                                 <FormControl>
                                     <Input

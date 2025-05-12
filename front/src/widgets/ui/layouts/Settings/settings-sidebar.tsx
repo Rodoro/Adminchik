@@ -8,7 +8,8 @@ import {
   User2,
   MonitorSmartphone,
   Settings,
-  Bell
+  Bell,
+  MessageCircleWarning
 } from "lucide-react"
 
 import { NavUser } from "@/widgets/ui/layouts/Sidebar/nav-user"
@@ -61,6 +62,11 @@ const data = {
       url: "https://web.telegram.org/a/#-1002558987262_1",
       icon: Send,
     },
+    {
+      title: "Reports",
+      url: "https://web.telegram.org/a/#-1002558987262_767",
+      icon: MessageCircleWarning,
+    }
   ],
 }
 

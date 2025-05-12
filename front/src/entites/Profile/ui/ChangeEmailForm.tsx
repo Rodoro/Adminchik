@@ -61,7 +61,7 @@ export function ChangeEmailForm() {
                         control={form.control}
                         name="email"
                         render={({ field }) => (
-                            <FormItem className="px-5">
+                            <FormItem className="px-0 sm:px-5">
                                 <FormLabel>{"Почта"}</FormLabel>
                                 <FormControl>
                                     <Input

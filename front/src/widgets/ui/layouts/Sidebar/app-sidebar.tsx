@@ -9,6 +9,7 @@ import {
   SquareTerminal,
   ShieldAlert,
   Send,
+  MessageCircleWarning,
 } from "lucide-react"
 
 import { NavMain } from "@/widgets/ui/layouts/Sidebar/nav-main"
@@ -80,6 +81,11 @@ const data = {
       url: "https://web.telegram.org/a/#-1002558987262_1",
       icon: Send,
     },
+    {
+      title: "Reports",
+      url: "https://web.telegram.org/a/#-1002558987262_767",
+      icon: MessageCircleWarning,
+    }
   ],
   projects: [
     {
