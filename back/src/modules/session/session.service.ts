@@ -10,6 +10,7 @@ import { StaffResponseDto } from '../staff/dto/staff-response.dto';
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util';
 import { RedisService } from '@/src/core/redis/redis.service';
 import { TelegramService } from '../telegram/telegram.service';
+import { LoggingService } from '../logging/logging.service';
 
 @Injectable()
 export class SessionService {
@@ -17,7 +18,8 @@ export class SessionService {
         private readonly prismaService: PrismaService,
         private readonly configService: ConfigService,
         private readonly redisService: RedisService,
-        private readonly telegramService: TelegramService
+        private readonly telegramService: TelegramService,
+        private readonly loggingService: LoggingService
     ) { }
 
     public async login(req: Request, loginStaffDto: LoginStaffDto, userAgent: string): Promise<StaffResponseDto> {

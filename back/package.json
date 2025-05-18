@@ -23,6 +23,7 @@
     "db:push-reset": "prisma db push --force-reset"
   },
   "dependencies": {
+    "@clickhouse/client": "^1.11.1",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",

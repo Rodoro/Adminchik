@@ -8,11 +8,13 @@ import { StaffResponseDto } from "./dto/staff-response.dto";
 import { Staff } from "@/prisma/generated";
 import { ChangeEmailDto } from "./dto/change-email.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { LoggingService } from "../logging/logging.service";
 
 @Injectable()
 export class StaffService {
     constructor(
         private readonly prismaService: PrismaService,
+        private readonly loggingService: LoggingService
     ) { }
 
     async me(id: string): Promise<StaffResponseDto> {
@@ -35,7 +37,7 @@ export class StaffService {
         return plainToInstance(StaffResponseDto, users);
     }
 
-    async create(createStaffDto: CreateStaffDto): Promise<void> {
+    async create(id: string, createStaffDto: CreateStaffDto): Promise<void> {
         const { email, password, displayName, firstName, lastName } = createStaffDto;
 
         const isUsernameExists = await this.prismaService.staff.findUnique({
@@ -46,7 +48,7 @@ export class StaffService {
             throw new ConflictException('Это имя пользователя уже занято');
         }
 
-        await this.prismaService.staff.create({
+        const newUser = await this.prismaService.staff.create({
             data: {
                 email,
                 password: await hash(password),
@@ -55,9 +57,19 @@ export class StaffService {
                 lastName
             }
         });
+
+        await this.loggingService.logAdminAction({
+            action: 'create_staff',
+            user_id: id,
+            target_id: newUser.id,
+            metadata: {
+                email: newUser.email,
+                role: newUser.displayName,
+            },
+        });
     }
 
-    async delete(deleteStaffDto: DeleteStaffDto): Promise<void> {
+    async delete(id: string, deleteStaffDto: DeleteStaffDto): Promise<void> {
         const { email } = deleteStaffDto;
         const staff = await this.prismaService.staff.findUnique({
             where: { email },
@@ -66,6 +78,16 @@ export class StaffService {
         if (!staff) {
             throw new NotFoundException('Администратор не найден');
         }
+
+        await this.loggingService.logAdminAction({
+            action: 'delete_staff',
+            user_id: id,
+            target_id: staff.id,
+            metadata: {
+                email: staff.email,
+                role: staff.displayName,
+            },
+        });
 
         await this.prismaService.staff.delete({
             where: { email },

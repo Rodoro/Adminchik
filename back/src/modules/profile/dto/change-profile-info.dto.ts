@@ -8,7 +8,7 @@ export class ChangeProfileInfoDto {
     })
     @IsString()
     @IsNotEmpty()
-    @Matches(/^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$/)
+    @Matches(/^[a-zA-Zа-яА-ЯёЁ0-9]+(?:-[a-zA-Zа-яА-ЯёЁ0-9]+)*$/)
     public firstName: string;
 
     @ApiProperty({
@@ -26,7 +26,7 @@ export class ChangeProfileInfoDto {
     })
     @IsString()
     @IsNotEmpty()
-    @Matches(/^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$/)
+    @Matches(/^[a-zA-Zа-яА-ЯёЁ0-9]+(?:-[a-zA-Zа-яА-ЯёЁ0-9]+)*$/)
     public lastName: string;
 
     @ApiProperty({

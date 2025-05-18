@@ -27,6 +27,7 @@ services:
     - adminchik
   minio:
     image: minio/minio
+    container_name: minio-adminchik
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -38,11 +39,26 @@ services:
       - minio_data:/data
     networks:
       - adminchik
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-adminchik
+    ports:
+      - "8123:8123"
+      - "9003:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - adminchik
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-default}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-password}
 
 volumes: 
   postgres_data:
   redis_data:
   minio_data:
+  clickhouse_data:
 
 networks:
   adminchik:

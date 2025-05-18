@@ -11,6 +11,11 @@ import { MinioModule } from './minio/minio.module';
 import { ProfileModule } from '../modules/profile/profile.module';
 import { TelegramModule } from '../modules/telegram/telegram.module';
 import { NotificationSettingsModule } from '../modules/notification/notification-settings.module';
+import { LoggingModule } from '../modules/logging/logging.module';
+import { ClickHouseModule } from './clickhouse/clickhouse.module';
+import { LoggingInterceptor } from '../modules/logging/logging.interceptor';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { ErrorFilter } from '../modules/logging/error.filter';
 
 @Module({
   imports: [
@@ -23,12 +28,24 @@ import { NotificationSettingsModule } from '../modules/notification/notification
     MailModule,
     MinioModule,
     TelegramModule,
+    ClickHouseModule,
 
     StaffModule,
     SessionModule,
     PasswordModule,
     ProfileModule,
     NotificationSettingsModule,
+    LoggingModule
   ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ErrorFilter,
+    },
+  ]
 })
 export class CoreModule { }

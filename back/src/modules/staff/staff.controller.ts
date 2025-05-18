@@ -47,8 +47,8 @@ export class StaffController {
         description: 'Staff member created successfully',
     })
     @ApiResponse({ status: 409, description: 'Email already exists' })
-    async create(@Body() createStaffDto: CreateStaffDto): Promise<{ success: boolean }> {
-        await this.staffService.create(createStaffDto);
+    async create(@Authorized('id') id: string, @Body() createStaffDto: CreateStaffDto): Promise<{ success: boolean }> {
+        await this.staffService.create(id, createStaffDto);
         return { success: true };
     }
 
@@ -59,8 +59,8 @@ export class StaffController {
         description: 'Staff member deleted successfully',
     })
     @ApiResponse({ status: 404, description: 'Staff member not found' })
-    async delete(@Body() deleteStaffDto: DeleteStaffDto): Promise<{ success: boolean }> {
-        await this.staffService.delete(deleteStaffDto);
+    async delete(@Authorized('id') id: string, @Body() deleteStaffDto: DeleteStaffDto): Promise<{ success: boolean }> {
+        await this.staffService.delete(id, deleteStaffDto);
         return { success: true };
     }
 
