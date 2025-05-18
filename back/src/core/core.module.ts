@@ -16,6 +16,7 @@ import { ClickHouseModule } from './clickhouse/clickhouse.module';
 import { LoggingInterceptor } from '../modules/logging/logging.interceptor';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorFilter } from '../modules/logging/error.filter';
+import { LogsMetricsModule } from '../modules/logs-metrics/logs-metrics.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { ErrorFilter } from '../modules/logging/error.filter';
     PasswordModule,
     ProfileModule,
     NotificationSettingsModule,
-    LoggingModule
+    LoggingModule,
+    LogsMetricsModule
   ],
   providers: [
     {
