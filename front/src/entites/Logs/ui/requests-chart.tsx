@@ -28,8 +28,48 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+const adjustToMoscowTime = (date: Date): Date => {
+    const moscowOffset = 3 * 60 * 60 * 1000;
+    const utcTime = date.getTime();
+    return new Date(utcTime + moscowOffset);
+};
+
+const fillTimeGaps = (data: any[], timeRange: '3h' | '24h' | '7d' | '30d') => {
+    if (data.length === 0) return data;
+
+    const result = [...data];
+    const timeStep = timeRange === '24h' ? 3600000 :
+        timeRange === '7d' ? 86400000 :
+            86400000;
+
+    result.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+
+    const minTime = new Date(result[0].time).getTime();
+    const maxTime = new Date(result[result.length - 1].time).getTime();
+
+    const expectedTimes = [];
+    for (let time = minTime; time <= maxTime; time += timeStep) {
+        expectedTimes.push(time);
+    }
+
+    expectedTimes.forEach(time => {
+        const exists = result.some(item => new Date(item.time).getTime() === time);
+        if (!exists) {
+            result.push({
+                time: new Date(time).toISOString(),
+                total_requests: 0,
+                error_requests: 0,
+                avg_duration: 0,
+                displayTime: adjustToMoscowTime(new Date(time))
+            });
+        }
+    });
+
+    return result.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+};
+
 export function RequestsChart() {
-    const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('24h');
+    const [timeRange, setTimeRange] = useState<'3h' | '24h' | '7d' | '30d'>('24h');
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -39,7 +79,13 @@ export function RequestsChart() {
             try {
                 setLoading(true);
                 const response = await metricsApi.getRequests(timeRange);
-                setData(response);
+
+                const processedData = fillTimeGaps(response, timeRange).map(item => ({
+                    ...item,
+                    displayTime: adjustToMoscowTime(new Date(item.time))
+                }));
+
+                setData(processedData);
                 setError(null);
             } catch (err) {
                 setError('Ошибка загрузки данных');
@@ -55,6 +101,24 @@ export function RequestsChart() {
     if (loading) return <Skeleton className="h-[400px] w-full" />;
     if (error) return <div>Ошибка загрузки данных</div>;
 
+    const formatTime = (value: string) => {
+        const date = adjustToMoscowTime(new Date(value));
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        if (hours === 0 && minutes === 0) {
+            return date.toLocaleDateString("ru-RU", {
+                day: "numeric",
+                month: "short",
+            });
+        }
+        return date.toLocaleTimeString("ru-RU", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
+    };
+
     return (
         <>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -66,6 +130,9 @@ export function RequestsChart() {
                     variant="outline"
                     className="min-[767px]:flex hidden"
                 >
+                    <ToggleGroupItem value="3h" className="h-8 px-2.5">
+                        3 часа
+                    </ToggleGroupItem>
                     <ToggleGroupItem value="24h" className="h-8 px-2.5">
                         24 часа
                     </ToggleGroupItem>
@@ -84,6 +151,9 @@ export function RequestsChart() {
                         <SelectValue placeholder="Период" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
+                        <SelectItem value="3h" className="rounded-lg">
+                            3 часа
+                        </SelectItem>
                         <SelectItem value="24h" className="rounded-lg">
                             24 часа
                         </SelectItem>
@@ -144,25 +214,7 @@ export function RequestsChart() {
                             axisLine={false}
                             tickMargin={8}
                             minTickGap={32}
-                            tickFormatter={(value) => {
-                                const date = new Date(value);
-                                const hours = date.getHours();
-                                const minutes = date.getMinutes();
-
-                                if (hours === 0 && minutes === 0) {
-                                    return date.toLocaleDateString("ru-RU", {
-                                        day: "numeric",
-                                        month: "short",
-                                    });
-                                }
-                                return date.toLocaleDateString("ru-RU", {
-                                    day: "numeric",
-                                    month: "short",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: false,
-                                });
-                            }}
+                            tickFormatter={formatTime}
                         />
                         <YAxis
                             tickLine={false}
@@ -174,17 +226,8 @@ export function RequestsChart() {
                             content={
                                 <ChartTooltipContent
                                     labelFormatter={(value) => {
-                                        const date = new Date(value);
-                                        const hours = date.getHours();
-                                        const minutes = date.getMinutes();
-
-                                        if (hours === 0 && minutes === 0) {
-                                            return date.toLocaleDateString("ru-RU", {
-                                                day: "numeric",
-                                                month: "short",
-                                            });
-                                        }
-                                        return date.toLocaleDateString("ru-RU", {
+                                        const date = adjustToMoscowTime(new Date(value));
+                                        return date.toLocaleString("ru-RU", {
                                             day: "numeric",
                                             month: "short",
                                             hour: "2-digit",
@@ -198,21 +241,21 @@ export function RequestsChart() {
                         />
                         <Area
                             dataKey="error_requests"
-                            type="natural"
+                            type="monotoneX"
                             fill="url(#fillErrorReq)"
                             stroke="var(--color-error_requests)"
                             stackId="a"
                         />
                         <Area
                             dataKey="total_requests"
-                            type="natural"
+                            type="monotoneX"
                             fill="url(#fillTotalReq)"
                             stroke="var(--color-total_requests)"
                             stackId="a"
                         />
                         <Area
                             dataKey="avg_duration"
-                            type="natural"
+                            type="monotoneX"
                             fill="url(#fillAvgDur)"
                             stroke="var(--color-avg_duration)"
                         />

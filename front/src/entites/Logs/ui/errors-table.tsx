@@ -21,19 +21,23 @@ import {
 } from "@tanstack/react-table";
 import { Input } from "@/shared/ui/form/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/form/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/form/tooltip";
 
-export type HttpRequest = {
+export type ErrorLog = {
     timestamp: string;
-    method: string;
-    path: string;
-    status: number;
-    duration_ms: number;
-    ip: string;
+    type: string;
+    message: string;
+    stack_trace: string;
+    request_id: string | null;
     user_id: string | null;
-    request_id: string;
+    path: string;
+    method: string;
+    status: number;
+    request_body: string | null;
+    response_body: string | null;
 };
 
-export const columns: ColumnDef<HttpRequest>[] = [
+export const columns: ColumnDef<ErrorLog>[] = [
     {
         accessorKey: "timestamp",
         header: ({ column }) => {
@@ -50,6 +54,51 @@ export const columns: ColumnDef<HttpRequest>[] = [
         cell: ({ row }) => {
             const date = new Date(row.getValue("timestamp"));
             return <div>{date.toLocaleString()}</div>;
+        },
+    },
+    {
+        accessorKey: "type",
+        header: "Тип ошибки",
+        cell: ({ row }) => {
+            const type = row.getValue("type") as string;
+            return (
+                <div className="font-medium">
+                    {type}
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "message",
+        header: "Сообщение",
+        cell: ({ row }) => {
+            const message = row.getValue("message") as string;
+            return (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div className="max-w-[200px] truncate">
+                            {message}
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[400px] break-words">
+                        {message}
+                    </TooltipContent>
+                </Tooltip>
+            );
+        },
+    },
+    {
+        accessorKey: "status",
+        header: "Статус",
+        cell: ({ row }) => {
+            const status = row.getValue("status") as number;
+            return (
+                <div className={`font-medium ${status >= 200 && status < 300 ? 'text-green-500' :
+                    status >= 500 ? 'text-red-500' : 'text-yellow-500'
+                    }`}>
+                    {status}
+                </div>
+            );
         },
     },
     {
@@ -73,58 +122,31 @@ export const columns: ColumnDef<HttpRequest>[] = [
         header: "Путь",
     },
     {
-        accessorKey: "status",
-        header: "Статус",
+        accessorKey: "user_id",
+        header: "Пользователь",
         cell: ({ row }) => {
-            const status = row.getValue("status") as number;
-            return (
-                <div className={`font-medium ${status >= 200 && status < 300 ? 'text-green-500' :
-                    status >= 400 ? 'text-red-500' : 'text-yellow-500'
-                    }`}>
-                    {status}
-                </div>
-            );
-        },
-    },
-    {
-        accessorKey: "duration_ms",
-        header: "Длительность (мс)",
-        cell: ({ row }) => {
-            const duration = row.getValue("duration_ms") as number;
-            return <div>{duration}</div>;
-        },
-    },
-    {
-        accessorKey: "ip",
-        header: "IP / Пользователь",
-        cell: ({ row }) => {
-            const ip = row.getValue("ip") as string;
             const userId = row.original.user_id;
 
             return (
                 <div className="flex flex-col">
-                    <span>{ip}</span>
-                    {userId && (
+                    {userId ? (
                         <span
                             className="text-xs text-muted-foreground truncate max-w-[120px]"
                             title={userId}
                         >
                             {userId.slice(0, 8)}...{userId.slice(-4)}
                         </span>
+                    ) : (
+                        <span className="text-muted-foreground">-</span>
                     )}
                 </div>
             );
         },
     },
-    {
-        accessorKey: "user_id",
-        header: () => null,
-        cell: () => null,
-    },
 ];
 
-export function HttpRequestsTable() {
-    const [data, setData] = useState<HttpRequest[]>([]);
+export function ErrorLogsTable() {
+    const [data, setData] = useState<ErrorLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -160,7 +182,7 @@ export function HttpRequestsTable() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await metricsApi.getHttpRequestsPaginated(
+            const response = await metricsApi.getErrorLogsPaginated(
                 pagination.pageIndex + 1,
                 pagination.pageSize
             );
@@ -186,17 +208,23 @@ export function HttpRequestsTable() {
     return (
         <>
             <CardHeader>
-                <CardTitle className="text-xl font-medium">HTTP Запросы</CardTitle>
+                <CardTitle className="text-xl font-medium">Логи ошибок</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex items-center flex-wrap gap-4 pb-4">
+                <div className="flex items-center flex-wrap gap-4 sm:grid grid-cols-3 pb-4">
                     <Input
-                        placeholder="Фильтр по пути..."
-                        value={(table.getColumn("path")?.getFilterValue() as string) ?? ""}
+                        placeholder="Фильтр по типу..."
+                        value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
-                            table.getColumn("path")?.setFilterValue(event.target.value)
+                            table.getColumn("type")?.setFilterValue(event.target.value)
                         }
-                        className="max-w-sm"
+                    />
+                    <Input
+                        placeholder="Фильтр по сообщению..."
+                        value={(table.getColumn("message")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("message")?.setFilterValue(event.target.value)
+                        }
                     />
                     <Input
                         placeholder="Фильтр по ID пользователя..."
@@ -204,7 +232,6 @@ export function HttpRequestsTable() {
                         onChange={(event) =>
                             table.getColumn("user_id")?.setFilterValue(event.target.value)
                         }
-                        className="max-w-sm"
                     />
                 </div>
                 <div className="rounded-md border">

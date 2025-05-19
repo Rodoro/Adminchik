@@ -25,9 +25,20 @@ export class LogsMetricsController {
         return this.metricsService.getErrorStats(range as any);
     }
 
+    @Get('errors-page')
+    async getErrorsPaginated(
+        @Query('page') page: string = '1',
+        @Query('pageSize') pageSize: string = '10',
+    ) {
+        return this.metricsService.getErrorsPaginated(
+            parseInt(page, 10),
+            parseInt(pageSize, 10),
+        );
+    }
+
     @Get('endpoints')
-    async getPopularEndpoints() {
-        return this.metricsService.getPopularEndpoints();
+    async getPopularEndpoints(@Query('range') range: '3h' | '24h' | '7d' | '30d' = '7d') {
+        return this.metricsService.getPopularEndpoints(range);
     }
 
     @Get('http-requests')

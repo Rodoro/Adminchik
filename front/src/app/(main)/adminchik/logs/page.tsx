@@ -1,6 +1,7 @@
 import { ActionsTable } from '@/entites/Logs/ui/actions-table'
 import { EndpointsTable } from '@/entites/Logs/ui/endpoints-table'
 import { ErrorsStats } from '@/entites/Logs/ui/errors-stats'
+import { ErrorLogsTable } from '@/entites/Logs/ui/errors-table'
 import { RequestsChart } from '@/entites/Logs/ui/requests-chart'
 import { HttpRequestsTable } from '@/entites/Logs/ui/requests-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/layout/tabs'
@@ -25,7 +26,7 @@ export default function page() {
                     { label: "Логи", isCurrent: true }
                 ]}
             />
-            <main className="flex flex-1 flex-col pb-4 pt-0 px-8 max-w-5xl">
+            <main className="flex flex-1 flex-col pb-4 pt-0 px-8 max-w-6xl">
                 <TypographyH2 text='Логи' />
                 <TypographyP className='' text='Здесь можно посмотреть все логи связанные с серсисом Adminhik' />
                 <Tabs defaultValue="requests">
@@ -43,7 +44,6 @@ export default function page() {
                         <Card>
                             <HttpRequestsTable />
                         </Card>
-                        {/* TODO: Таблица всех логов */}
                     </TabsContent>
 
                     <TabsContent value="actions">
@@ -52,11 +52,13 @@ export default function page() {
                         </Card>
                     </TabsContent>
 
-                    <TabsContent value="errors">
+                    <TabsContent value="errors" className='flex flex-col gap-8'>
                         <Card className='mt-4'>
                             <ErrorsStats />
                         </Card>
-                        {/* TODO: Таблица всех ошибок */}
+                        <Card>
+                            <ErrorLogsTable />
+                        </Card>
                     </TabsContent>
 
                     <TabsContent value="endpoints">

@@ -10,8 +10,8 @@ export class LogsMetricsService {
     private readonly config: ConfigService
   ) { }
 
-  async getRequestsMetrics(timeRange: '24h' | '7d' | '30d') {
-    const interval = timeRange === '24h' ? '1 HOUR' : timeRange === '7d' ? '1 DAY' : '7 DAY';
+  async getRequestsMetrics(timeRange: '3h' | '24h' | '7d' | '30d') {
+    const interval = timeRange === '3h' ? '15 MINUTE' : (timeRange === '24h' ? '1 HOUR' : timeRange === '7d' ? '1 DAY' : '7 DAY');
     const timeRangeInterval = timeRange.replace('d', ' DAY').replace('h', ' HOUR');
     const db = this.config.get('CLICKHOUSE_DB');
 
@@ -85,18 +85,42 @@ export class LogsMetricsService {
     return (await result.json()).data;
   }
 
-  async getPopularEndpoints() {
+  async getPopularEndpoints(timeRange: '3h' | '24h' | '7d' | '30d' = '7d') {
+    const timeRangeInterval = timeRange.replace('d', ' DAY').replace('h', ' HOUR');
+    const db = this.config.get('CLICKHOUSE_DB');
+
     const query = `
+      WITH 
+        requests_stats AS (
+          SELECT 
+            path,
+            method,
+            count() AS requests,
+            avg(duration_ms) AS avg_duration
+          FROM ${db}.http_requests
+          WHERE timestamp >= now() - INTERVAL ${timeRangeInterval}
+          GROUP BY path, method
+        ),
+        errors_stats AS (
+          SELECT 
+            http_path AS path,
+            http_method AS method,
+            count() AS errors
+          FROM ${db}.errors
+          WHERE timestamp >= now() - INTERVAL ${timeRangeInterval}
+            AND http_path IS NOT NULL
+            AND http_method IS NOT NULL
+          GROUP BY path, method
+        )
       SELECT 
-        path,
-        method,
-        count() AS requests,
-        avg(duration_ms) AS avg_duration,
-        countIf(status >= 400) AS errors
-      FROM ${this.config.get('CLICKHOUSE_DB')}.http_requests
-      WHERE timestamp >= now() - INTERVAL 7 DAY
-      GROUP BY path, method
-      ORDER BY requests DESC
+        r.path,
+        r.method,
+        r.requests,
+        r.avg_duration,
+        if(e.errors > 0, e.errors, 0) AS errors
+      FROM requests_stats r
+      LEFT JOIN errors_stats e ON r.path = e.path AND r.method = e.method
+      ORDER BY r.requests DESC
     `;
 
     const result = await this.clickhouse.query({ query });
@@ -125,6 +149,55 @@ export class LogsMetricsService {
     const countQuery = `
       SELECT count() as total
       FROM ${db}.http_requests
+    `;
+
+    const [result, countResult] = await Promise.all([
+      this.clickhouse.query({ query }),
+      this.clickhouse.query({ query: countQuery }),
+    ]);
+
+    const data = (await result.json()).data;
+    const countData = await countResult.json() as { data: { total: string }[] };
+
+    const total = parseInt(countData.data[0].total, 10);
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+  }
+
+  async getErrorsPaginated(page: number = 1, pageSize: number = 10) {
+    const offset = (page - 1) * pageSize;
+    const db = this.config.get('CLICKHOUSE_DB');
+
+    const query = `
+      SELECT 
+        timestamp,
+        type,
+        message,
+        stack_trace,
+        request_id,
+        user_id,
+        http_path as path,
+        http_method as method,
+        http_status as status,
+        request_body,
+        response_body,
+        metadata
+      FROM ${db}.errors
+      ORDER BY timestamp DESC
+      LIMIT ${pageSize} OFFSET ${offset}
+    `;
+
+    const countQuery = `
+      SELECT count() as total
+      FROM ${db}.errors
     `;
 
     const [result, countResult] = await Promise.all([

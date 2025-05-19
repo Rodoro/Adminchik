@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Skeleton } from "@/shared/ui/branding/skeleton";
@@ -20,6 +21,7 @@ import {
 } from "@tanstack/react-table";
 import { Input } from "@/shared/ui/form/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/form/select";
+import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/form/toggle-group";
 
 export type Endpoint = {
     method: string;
@@ -33,7 +35,18 @@ export const columns: ColumnDef<Endpoint>[] = [
     {
         accessorKey: "method",
         header: "Метод",
-        cell: ({ row }) => <div className="font-medium">{row.getValue("method")}</div>,
+        cell: ({ row }) => {
+            const method = row.getValue("method") as string;
+            return (
+                <div className={`font-medium ${method === 'GET' ? 'text-blue-500' :
+                    method === 'POST' ? 'text-green-500' :
+                        method === 'PUT' ? 'text-yellow-500' :
+                            method === 'DELETE' ? 'text-red-500' : ''
+                    }`}>
+                    {method}
+                </div>
+            );
+        },
     },
     {
         accessorKey: "path",
@@ -52,10 +65,28 @@ export const columns: ColumnDef<Endpoint>[] = [
                 </Button>
             )
         },
+        cell: ({ row }) => {
+            const requests = row.getValue("requests") as number;
+            return <div className="font-medium">{requests}</div>;
+        },
     },
     {
         accessorKey: "errors",
-        header: "Ошибки",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Ошибки
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const errors = row.getValue("errors") as number;
+            return <div className={errors > 0 ? "text-red-500 font-medium" : ""}>{errors}</div>;
+        },
     },
     {
         accessorKey: "avg_duration",
@@ -78,6 +109,7 @@ export const columns: ColumnDef<Endpoint>[] = [
 ];
 
 export function EndpointsTable() {
+    const [timeRange, setTimeRange] = useState<'3h' | '24h' | '7d' | '30d'>('24h');
     const [data, setData] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -103,7 +135,7 @@ export function EndpointsTable() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await metricsApi.getEndpoints();
+                const response = await metricsApi.getEndpoints(timeRange);
                 setData(response);
                 setError(null);
             } catch (err) {
@@ -115,10 +147,10 @@ export function EndpointsTable() {
         };
 
         fetchData();
-    }, []);
+    }, [timeRange]);
 
     if (loading) return <Skeleton className="h-[300px] w-full" />;
-    if (error) return <div>Ошибка загрузки данных</div>;
+    if (error) return <div className="text-red-500 p-4">{error}</div>;
 
     return (
         <>
@@ -126,7 +158,7 @@ export function EndpointsTable() {
                 <CardTitle className="text-xl font-medium">Популярные эндпоинты</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex items-center pb-4">
+                <div className="flex items-center justify-between pb-4">
                     <Input
                         placeholder="Фильтр по пути..."
                         value={(table.getColumn("path")?.getFilterValue() as string) ?? ""}
@@ -135,6 +167,48 @@ export function EndpointsTable() {
                         }
                         className="max-w-sm"
                     />
+                    <ToggleGroup
+                        type="single"
+                        value={timeRange}
+                        onValueChange={(v) => setTimeRange(v as any)}
+                        variant="outline"
+                        className="min-[767px]:flex hidden"
+                    >
+                        <ToggleGroupItem value="3h" className="h-8 px-2.5">
+                            3 часа
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="24h" className="h-8 px-2.5">
+                            24 часа
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="7d" className="h-8 px-2.5">
+                            7 дней
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="30d" className="h-8 px-2.5">
+                            30 дней
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+                    <Select value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+                        <SelectTrigger
+                            className="min-[767px]:hidden flex w-40"
+                            aria-label="Выберите значение"
+                        >
+                            <SelectValue placeholder="Период" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            <SelectItem value="3h" className="rounded-lg">
+                                3 часа
+                            </SelectItem>
+                            <SelectItem value="24h" className="rounded-lg">
+                                24 часа
+                            </SelectItem>
+                            <SelectItem value="7d" className="rounded-lg">
+                                7 дней
+                            </SelectItem>
+                            <SelectItem value="30d" className="rounded-lg">
+                                30 дней
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="rounded-md border">
                     <Table>
@@ -186,44 +260,48 @@ export function EndpointsTable() {
                         </TableBody>
                     </Table>
                 </div>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <div className="flex items-center space-x-2">
-                        <p className="text-sm text-muted-foreground">Записей на странице:</p>
-                        <Select
-                            value={table.getState().pagination.pageSize.toString()}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value));
-                            }}
-                        >
-                            <SelectTrigger className="w-20">
-                                <SelectValue placeholder={table.getState().pagination.pageSize} />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                                {[10, 25, 50, 100].map((pageSize) => (
-                                    <SelectItem key={pageSize} value={pageSize.toString()} className="rounded-lg">
-                                        {pageSize}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
+                    <div className="text-sm text-muted-foreground">
+                        Всего записей: {table.getFilteredRowModel().rows.length}
                     </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Назад
-                        </Button>
-                        <Button
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Вперед
-                        </Button>
+                    <div className="flex flex-col sm:flex-row items-center space-x-6 gap-4">
+                        <div className="flex items-center space-x-2">
+                            <p className="text-sm text-muted-foreground">Записей на странице:</p>
+                            <Select
+                                value={table.getState().pagination.pageSize.toString()}
+                                onValueChange={(value) => {
+                                    table.setPageSize(Number(value));
+                                }}
+                            >
+                                <SelectTrigger className="w-20">
+                                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    {[10, 25, 50, 100].map((pageSize) => (
+                                        <SelectItem key={pageSize} value={pageSize.toString()} className="rounded-lg">
+                                            {pageSize}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-x-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                            >
+                                Назад
+                            </Button>
+                            <Button
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                Вперед
+                            </Button>
+                        </div>
                     </div>
                 </div>
-                {/* TODO: Обновить по сравнению с req table */}
             </CardContent>
         </>
     );

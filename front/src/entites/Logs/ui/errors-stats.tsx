@@ -31,7 +31,13 @@ export function ErrorsStats() {
             try {
                 setLoading(true);
                 const response = await metricsApi.getErrors(timeRange);
-                setData(response);
+
+                const formattedData = response.map(item => ({
+                    ...item,
+                    count: Number(item.count)
+                }));
+
+                setData(formattedData);
                 setError(null);
             } catch (err) {
                 setError('Ошибка загрузки данных');
