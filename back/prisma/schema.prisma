@@ -23,6 +23,9 @@ model Staff {
     password   String
     telegramId String? @unique @map("telegram_id")
 
+    permissions String   @default("")
+    projects    String[]
+
     notifications        Notification[]
     notificationSettings NotificationSettings?
 

@@ -8,6 +8,8 @@ export interface Staff {
     midleName: string
     lastName?: string
     telegramId?: string
+    permissions: string
+    projects: string[]
     notificationSettings: {
         authLogin: boolean
         passwordReset: boolean

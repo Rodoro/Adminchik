@@ -32,7 +32,11 @@ export class StaffResponseDto {
     @Expose()
     bio: string
     @Expose()
-    telegramId
+    telegramId: string
+    @Expose()
+    permissions: string
+    @Expose()
+    projects: string[]
 
     @Expose()
     notificationSettings: {

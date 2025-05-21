@@ -61,7 +61,12 @@ export const apiClient = {
         })
     },
 
-    delete<T>(url: string): Promise<T> {
-        return this.request(url, { method: 'DELETE' })
-    }
+    delete<T>(url: string, body?: unknown, headers?: Record<string, string>): Promise<T> {
+        const isFormData = body instanceof FormData
+        return this.request(url, {
+            method: 'DELETE',
+            body: isFormData ? body : JSON.stringify(body),
+            headers
+        })
+    },
 }

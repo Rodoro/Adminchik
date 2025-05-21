@@ -26,7 +26,7 @@ export default function page() {
                     { label: "Логи", isCurrent: true }
                 ]}
             />
-            <main className="flex flex-1 flex-col pb-4 pt-0 px-8 max-w-6xl">
+            <main className="flex flex-1 flex-col pb-4 pt-0 px-8 max-w-7xl">
                 <TypographyH2 text='Логи' />
                 <TypographyP className='' text='Здесь можно посмотреть все логи связанные с серсисом Adminhik' />
                 <Tabs defaultValue="requests">
