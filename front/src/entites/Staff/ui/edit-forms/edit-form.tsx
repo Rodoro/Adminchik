@@ -16,7 +16,7 @@ import { Button } from '@/shared/ui/form/button';
 import { Checkbox } from '@/shared/ui/form/checkbox';
 import { Textarea } from '@/shared/ui/form/textarea';
 
-//TODO: Редактирование сессий и логи
+//TODO: Редактирование логи
 
 const formSchema = z.object({
     email: z.string().email("Некорректный email"),

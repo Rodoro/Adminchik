@@ -33,7 +33,7 @@ import { getMediaSource } from "@/shared/lib/utils/get-media-source";
 //TODO: Система проектов
 //TODO: Редактирование админов
 //TODO: Поченить логи админов
-//TODO: Гварды на права и на проекты
+//TODO: Гварды на права и на проекты как в беке так и во фронте
 //TODO: Фильтр в таблице по правам и проектам
 
 export function StaffTable() {
