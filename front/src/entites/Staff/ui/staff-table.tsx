@@ -34,6 +34,7 @@ import { getMediaSource } from "@/shared/lib/utils/get-media-source";
 //TODO: Редактирование админов
 //TODO: Поченить логи админов
 //TODO: Гварды на права и на проекты
+//TODO: Фильтр в таблице по правам и проектам
 
 export function StaffTable() {
     const [data, setData] = useState<Staff[]>([]);

@@ -18,13 +18,18 @@ import { UpdateStaffDto } from "./dto/update-staff.dto";
 import { MinioService } from "@/src/core/minio/minio.service";
 import * as sharp from 'sharp';
 import { Upload } from "@/src/shared/interfaces/upload.interface";
+import { Request } from 'express';
+import { RedisService } from "@/src/core/redis/redis.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class StaffService {
     constructor(
         private readonly storageService: MinioService,
         private readonly prismaService: PrismaService,
-        private readonly loggingService: LoggingService
+        private readonly loggingService: LoggingService,
+        private readonly redisService: RedisService,
+        private readonly configService: ConfigService,
     ) { }
 
     async me(id: string): Promise<StaffResponseDto> {
@@ -411,5 +416,62 @@ export class StaffService {
         });
 
         return true;
+    }
+
+    async removeStaffSession(
+        req: Request,
+        staffId: string,
+        sessionId: string
+    ) {
+        if (req.session.staffId !== staffId) {
+            throw new NotFoundException('Доступ запрещен');
+        }
+        if (req.session.id === sessionId) {
+            throw new NotFoundException('Нельзя удалить текущую сессию');
+        }
+        const sessionKey = `${this.configService.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`;
+        const sessionData = await this.redisService.get(sessionKey);
+
+        if (!sessionData) {
+            throw new NotFoundException('Сессия не найдена');
+        }
+
+        const session = JSON.parse(sessionData);
+        if (session.staffId !== staffId) {
+            throw new NotFoundException('Сессия не принадлежит этому сотруднику');
+        }
+
+        await this.redisService.del(sessionKey);
+        return true;
+    }
+
+    async findByStaff(
+        req: Request,
+        staffId: string
+    ) {
+        const keys = await this.redisService.keys('*');
+        const staffSessions: any[] = [];
+
+        if (!keys) {
+            return [];
+        }
+
+        for (const key of keys) {
+            const sessionData = await this.redisService.get(key);
+
+            if (sessionData) {
+                const session = JSON.parse(sessionData);
+                if (session.staffId === staffId) {
+                    staffSessions.push({
+                        ...session,
+                        id: key.split(':')[1],
+                    });
+                }
+            }
+        }
+
+        staffSessions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        return staffSessions;
     }
 }

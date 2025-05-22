@@ -1,5 +1,6 @@
 import { ChangeAvatarForm } from '@/entites/Staff/ui/edit-forms/edit-avatar-form';
 import EditStaffPage from '@/entites/Staff/ui/edit-forms/edit-form';
+import SessionStaffList from '@/entites/Staff/ui/edit-forms/edit-session';
 import { TypographyH2 } from '@/shared/ui/typography/TypographyH2'
 import Header from '@/widgets/ui/layouts/Header/Header'
 import React from 'react'
@@ -26,6 +27,7 @@ export default function page({ params }: {
                 <TypographyH2 text='Редактировать сотрудника' />
                 <ChangeAvatarForm params={params} />
                 <EditStaffPage params={params} />
+                <SessionStaffList params={params} />
             </main>
         </>
     )

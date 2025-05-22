@@ -18,6 +18,8 @@ import { SuccessResponseDto } from "../profile/dto/success-response.dto";
 import { FileValidationPipe } from "@/src/shared/pipes/file-validation.pipe";
 import { Readable } from "stream";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { SessionDto } from "../session/dto/session.dto";
+import { Request } from 'express';
 
 @ApiTags('Staff')
 @Authorization()
@@ -272,5 +274,37 @@ export class StaffController {
             success: result,
             message: 'Avatar successfully removed',
         };
+    }
+
+    @Authorization()
+    @Get('session/:staffId')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get all sessions for staff member' })
+    @ApiResponse({
+        status: 200,
+        description: 'List of sessions for staff member',
+        type: [SessionDto]
+    })
+    async findByStaff(
+        @Req() req: Request,
+        @Param('staffId') staffId: string
+    ) {
+        return this.staffService.findByStaff(req, staffId);
+    }
+
+    @Authorization()
+    @Delete('session/:staffId/:sessionId')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Terminate staff session by ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Session terminated successfully'
+    })
+    async removeStaffSession(
+        @Req() req: Request,
+        @Param('staffId') staffId: string,
+        @Param('sessionId') sessionId: string
+    ) {
+        return this.staffService.removeStaffSession(req, staffId, sessionId);
     }
 }
