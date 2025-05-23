@@ -154,8 +154,10 @@ export class LoggingService {
         await this.clickhouse.insert({
             table: `${this.config.get('CLICKHOUSE_DB')}.admin_actions`,
             values: [{
-                ...payload,
-                metadata: JSON.stringify(payload.metadata || {}),
+                action: payload.action,
+                user_id: payload.user_id,
+                target_id: payload.target_id,
+                metadata: payload.metadata || {},
             }],
             format: 'JSONEachRow',
         });

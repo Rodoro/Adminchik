@@ -1,4 +1,4 @@
-import { ActionsTable } from '@/entites/Logs/ui/actions-table'
+// import { ActionsTable } from '@/entites/Logs/ui/actions-table'
 import { EndpointsTable } from '@/entites/Logs/ui/endpoints-table'
 import { ErrorsStats } from '@/entites/Logs/ui/errors-stats'
 import { ErrorLogsTable } from '@/entites/Logs/ui/errors-table'
@@ -30,9 +30,9 @@ export default function page() {
                 <TypographyH2 text='Логи' />
                 <TypographyP className='' text='Здесь можно посмотреть все логи связанные с серсисом Adminhik' />
                 <Tabs defaultValue="requests">
-                    <TabsList className="grid w-full grid-cols-4 mt-4">
+                    <TabsList className="grid w-full grid-cols-3 mt-4">
                         <TabsTrigger value="requests">Запросы</TabsTrigger>
-                        <TabsTrigger value="actions">Действия</TabsTrigger>
+                        {/* <TabsTrigger value="actions">Действия</TabsTrigger> */}
                         <TabsTrigger value="errors">Ошибки</TabsTrigger>
                         <TabsTrigger value="endpoints">Эндпоинты</TabsTrigger>
                     </TabsList>
@@ -46,11 +46,11 @@ export default function page() {
                         </Card>
                     </TabsContent>
 
-                    <TabsContent value="actions">
+                    {/* <TabsContent value="actions">
                         <Card className='mt-4'>
                             <ActionsTable />
                         </Card>
-                    </TabsContent>
+                    </TabsContent> */}
 
                     <TabsContent value="errors" className='flex flex-col gap-8'>
                         <Card className='mt-4'>

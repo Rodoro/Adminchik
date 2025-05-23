@@ -1,5 +1,6 @@
 import { ChangeAvatarForm } from '@/entites/Staff/ui/edit-forms/edit-avatar-form';
 import EditStaffPage from '@/entites/Staff/ui/edit-forms/edit-form';
+import { UserLogsTable } from '@/entites/Staff/ui/edit-forms/edit-logs-table';
 import SessionStaffList from '@/entites/Staff/ui/edit-forms/edit-session';
 import { TypographyH2 } from '@/shared/ui/typography/TypographyH2'
 import Header from '@/widgets/ui/layouts/Header/Header'
@@ -28,6 +29,7 @@ export default function page({ params }: {
                 <ChangeAvatarForm params={params} />
                 <EditStaffPage params={params} />
                 <SessionStaffList params={params} />
+                <UserLogsTable params={params} />
             </main>
         </>
     )

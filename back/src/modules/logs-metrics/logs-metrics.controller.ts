@@ -1,5 +1,5 @@
 // src/logs-metrics/logs-metrics.controller.ts
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { LogsMetricsService } from './logs-metrics.service';
 import { Authorization } from '@/src/shared/decorators/auth.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -50,5 +50,28 @@ export class LogsMetricsController {
             parseInt(page, 10),
             parseInt(pageSize, 10),
         );
+    }
+
+    @Get('users/:id/activity-logs')
+    async getUserActivityLogs(
+        @Param('id') userId: string,
+        @Query('page') page: string = '1',
+        @Query('pageSize') pageSize: string = '10',
+        @Query('action') action?: string,
+        @Query('endpoint') endpoint?: string,
+        @Query('dateFrom') dateFrom?: string,
+        @Query('dateTo') dateTo?: string,
+    ) {
+        return this.metricsService.getUserActivityLogs(
+            userId,
+            parseInt(page, 10),
+            parseInt(pageSize, 10),
+            { action, endpoint, dateFrom, dateTo }
+        );
+    }
+
+    @Get('users/:id/activity-logs/actions')
+    async getUserAvailableActions(@Param('id') userId: string) {
+        return this.metricsService.getUserAvailableActions(userId);
     }
 }

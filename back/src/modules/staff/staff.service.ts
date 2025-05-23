@@ -97,7 +97,7 @@ export class StaffService {
             target_id: newUser.id,
             metadata: {
                 email: newUser.email,
-                role: newUser.displayName,
+                displayName: newUser.displayName,
             },
         });
     }
@@ -118,7 +118,7 @@ export class StaffService {
             target_id: staff.id,
             metadata: {
                 email: staff.email,
-                role: staff.displayName,
+                displayName: staff.displayName,
             },
         });
 

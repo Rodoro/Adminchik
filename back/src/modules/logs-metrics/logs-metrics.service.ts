@@ -1,6 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClickHouseClient } from '@clickhouse/client';
 import { ConfigService } from '@nestjs/config';
+import { INCLUDED_PATHS, INCLUDED_METHODS } from './config/viewLogs';
+import { buildPathConditions } from '@/src/shared/utils/pathMatcher';
 
 @Injectable()
 export class LogsMetricsService {
@@ -219,5 +221,98 @@ export class LogsMetricsService {
         totalPages: Math.ceil(total / pageSize),
       },
     };
+  }
+
+  async getUserActivityLogs(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 10,
+    filters?: {
+      action?: string;
+      endpoint?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    }
+  ) {
+    const offset = (page - 1) * pageSize;
+    const db = this.config.get('CLICKHOUSE_DB');
+
+    let whereClauses = [`user_id = '${userId}'`];
+
+    whereClauses.push(`(${buildPathConditions()})`);
+
+    whereClauses.push(`method IN (${INCLUDED_METHODS.map(m => `'${m}'`).join(', ')})`);
+
+    if (filters?.action) {
+      whereClauses.push(`method = '${filters.action}'`);
+    }
+    if (filters?.endpoint) {
+      whereClauses.push(`path LIKE '%${filters.endpoint}%'`);
+    }
+    if (filters?.dateFrom) {
+      whereClauses.push(`timestamp >= '${filters.dateFrom}'`);
+    }
+    if (filters?.dateTo) {
+      whereClauses.push(`timestamp <= '${filters.dateTo}'`);
+    }
+
+    const query = `
+      SELECT 
+        timestamp,
+        method as action,
+        path as endpoint,
+        status,
+        duration_ms,
+        ip,
+        request_id,
+        if(status >= 400, toString(response_body), '') as details
+      FROM ${db}.http_requests
+      WHERE ${whereClauses.join(' AND ')}
+      ORDER BY timestamp DESC
+      LIMIT ${pageSize} OFFSET ${offset}
+    `;
+
+    const countQuery = `
+      SELECT count() as total
+      FROM ${db}.http_requests
+      WHERE ${whereClauses.join(' AND ')}
+    `;
+
+    const [result, countResult] = await Promise.all([
+      this.clickhouse.query({ query }),
+      this.clickhouse.query({ query: countQuery }),
+    ]);
+
+    const data = (await result.json()).data;
+    const countData = await countResult.json() as { data: { total: string }[] };
+
+    const total = parseInt(countData.data[0].total, 10);
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+  }
+
+  async getUserAvailableActions(userId: string) {
+    const db = this.config.get('CLICKHOUSE_DB');
+
+    const query = `
+    SELECT DISTINCT method as action
+    FROM ${db}.http_requests
+    WHERE user_id = '${userId}'
+      AND (${buildPathConditions()})
+      AND method IN (${INCLUDED_METHODS.map(m => `'${m}'`).join(', ')})
+    ORDER BY action
+  `;
+
+    const result = await this.clickhouse.query({ query });
+    const data = (await result.json()).data;
+    return data.map((item: any) => item.action);
   }
 }

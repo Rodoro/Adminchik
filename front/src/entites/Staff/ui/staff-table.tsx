@@ -31,10 +31,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/branding/avatar
 import { getMediaSource } from "@/shared/lib/utils/get-media-source";
 
 //TODO: Система проектов
-//TODO: Редактирование админов
-//TODO: Поченить логи админов
 //TODO: Гварды на права и на проекты как в беке так и во фронте
 //TODO: Фильтр в таблице по правам и проектам
+//TODO: Скопировать id staff
 
 export function StaffTable() {
     const [data, setData] = useState<Staff[]>([]);
