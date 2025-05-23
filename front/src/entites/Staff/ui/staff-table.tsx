@@ -5,7 +5,7 @@ import { CardContent, CardHeader, CardTitle } from "@/shared/ui/overlay/card";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/shared/ui/branding/table";
 import { useEffect, useState } from "react";
 import { Button } from "@/shared/ui/form/button";
-import { ArrowUpDown, Edit, Trash2, Plus } from "lucide-react";
+import { ArrowUpDown, Edit, Trash2, Plus, X } from "lucide-react";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -32,8 +32,6 @@ import { getMediaSource } from "@/shared/lib/utils/get-media-source";
 
 //TODO: Система проектов
 //TODO: Гварды на права и на проекты как в беке так и во фронте
-//TODO: Фильтр в таблице по правам и проектам
-//TODO: Скопировать id staff
 
 export function StaffTable() {
     const [data, setData] = useState<Staff[]>([]);
@@ -42,11 +40,32 @@ export function StaffTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+    const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
     });
     const router = useRouter();
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        toast.success('ID скопирован в буфер обмена', {
+            description: text,
+        });
+    };
+
+    const allPermissions = Array.from(new Set(
+        data.flatMap(staff =>
+            staff.permissions.split('')
+                .map((perm, idx) => perm === '1' ? PermissionBadges[idx as keyof typeof PermissionBadges] : null)
+                .filter((perm): perm is string => perm !== null)
+        )
+    )).sort();
+
+    const allProjects = Array.from(new Set(
+        data.flatMap(staff => staff.projects)
+    )).sort();
 
     const columns: ColumnDef<Staff>[] = [
         {
@@ -123,6 +142,15 @@ export function StaffTable() {
                     </div>
                 );
             },
+            filterFn: (row, columnId, filterValues: string[]) => {
+                if (filterValues.length === 0) return true;
+
+                const permissions = row.getValue(columnId) as string;
+                return filterValues.some(permLabel => {
+                    const permIndex = Object.values(PermissionBadges).indexOf(permLabel);
+                    return permissions[permIndex] === '1';
+                });
+            },
         },
         {
             accessorKey: "projects",
@@ -136,6 +164,12 @@ export function StaffTable() {
                         ))}
                     </div>
                 );
+            },
+            filterFn: (row, columnId, filterValues: string[]) => {
+                if (filterValues.length === 0) return true;
+
+                const projects = row.getValue(columnId) as string[];
+                return filterValues.some(project => projects.includes(project));
             },
         },
         {
@@ -186,7 +220,9 @@ export function StaffTable() {
             sorting,
             columnFilters: [
                 ...columnFilters,
-                { id: 'searchText', value: globalFilter }
+                { id: 'searchText', value: globalFilter },
+                { id: 'permissions', value: selectedPermissions },
+                { id: 'projects', value: selectedProjects }
             ],
             pagination,
             globalFilter,
@@ -222,6 +258,22 @@ export function StaffTable() {
         }
     };
 
+    const handlePermissionToggle = (permission: string) => {
+        setSelectedPermissions(prev =>
+            prev.includes(permission)
+                ? prev.filter(p => p !== permission)
+                : [...prev, permission]
+        );
+    };
+
+    const handleProjectToggle = (project: string) => {
+        setSelectedProjects(prev =>
+            prev.includes(project)
+                ? prev.filter(p => p !== project)
+                : [...prev, project]
+        );
+    };
+
     useEffect(() => {
         fetchData();
     }, [pagination.pageIndex, pagination.pageSize]);
@@ -250,6 +302,92 @@ export function StaffTable() {
                         }}
                         className="max-w-sm"
                     />
+
+                    <Select
+                        value={selectedPermissions.join(',')}
+                        onValueChange={() => { }}
+                    >
+                        <SelectTrigger className="min-w-[180px] [&>div>span]:truncate">
+                            <div className="flex items-center gap-1">
+                                <span>
+                                    {selectedPermissions.length === 0
+                                        ? "Фильтр по правам"
+                                        : selectedPermissions.length === 1
+                                            ? selectedPermissions[0]
+                                            : `Выбрано `}
+                                </span>
+                                {selectedPermissions.length > 1 && (
+                                    <Badge variant="secondary" className="h-5 w-5 p-0">
+                                        {selectedPermissions.length}
+                                    </Badge>
+                                )}
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl max-h-[300px] overflow-y-auto">
+                            {allPermissions.map(perm => (
+                                <div
+                                    key={perm}
+                                    className={`rounded-sm my-1.5 mx-1.5 px-2 py-1.5 text-sm flex items-center ${selectedPermissions.includes(perm) ? 'bg-accent' : ''}`}
+                                    onClick={() => handlePermissionToggle(perm)}
+                                >
+                                    <span className="flex-1">{perm}</span>
+                                    {selectedPermissions.includes(perm) && (
+                                        <X className="h-4 w-4 ml-2 opacity-50 hover:opacity-100" />
+                                    )}
+                                </div>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Select
+                        value={selectedProjects.join(',')}
+                        onValueChange={() => { }}
+                    >
+                        <SelectTrigger className="min-w-[180px] [&>div>span]:truncate">
+                            <div className="flex items-center gap-1">
+                                <span>
+                                    {selectedProjects.length === 0
+                                        ? "Фильтр по проектам"
+                                        : selectedProjects.length === 1
+                                            ? selectedProjects[0]
+                                            : `Выбрано `}
+                                </span>
+                                {selectedProjects.length > 1 && (
+                                    <Badge variant="secondary" className="h-5 w-5 p-0">
+                                        {selectedProjects.length}
+                                    </Badge>
+                                )}
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl max-h-[300px] overflow-y-auto">
+                            {allProjects.map(project => (
+                                <div
+                                    key={project}
+                                    className={`rounded-sm my-1.5 mx-1.5 px-2 py-1.5 text-sm flex items-center ${selectedProjects.includes(project) ? 'bg-accent' : ''}`}
+                                    onClick={() => handleProjectToggle(project)}
+                                >
+                                    <span className="flex-1">{project}</span>
+                                    {selectedProjects.includes(project) && (
+                                        <X className="h-4 w-4 ml-2 opacity-50 hover:opacity-100" />
+                                    )}
+                                </div>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    {(selectedPermissions.length > 0 || selectedProjects.length > 0) && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setSelectedPermissions([]);
+                                setSelectedProjects([]);
+                            }}
+                            className="ml-auto"
+                        >
+                            <X className="mr-2 h-4 w-4" />
+                            Сбросить фильтры
+                        </Button>
+                    )}
                 </div>
                 <div className="rounded-md border">
                     <Table>
@@ -275,6 +413,8 @@ export function StaffTable() {
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && "selected"}
+                                        onClick={() => copyToClipboard(row.original.id)}
+                                        className="cursor-pointer hover:bg-muted/50 transition-colors"
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>

@@ -9,6 +9,8 @@ export type UserActivityLog = {
     ip: string;
     details: string;
     request_id: string;
+    request_body: string | null;
+    response_body: string | null;
 };
 
 export type PaginatedResponse<T> = {

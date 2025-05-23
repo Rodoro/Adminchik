@@ -240,7 +240,6 @@ export class LogsMetricsService {
     let whereClauses = [`user_id = '${userId}'`];
 
     whereClauses.push(`(${buildPathConditions()})`);
-
     whereClauses.push(`method IN (${INCLUDED_METHODS.map(m => `'${m}'`).join(', ')})`);
 
     if (filters?.action) {
@@ -265,7 +264,10 @@ export class LogsMetricsService {
         duration_ms,
         ip,
         request_id,
-        if(status >= 400, toString(response_body), '') as details
+        if(status >= 400, toString(response_body), '') as details,
+        -- Добавляем тела запросов и ответов
+        if(empty(request_body), null, request_body) as request_body,
+        if(empty(response_body), null, response_body) as response_body
       FROM ${db}.http_requests
       WHERE ${whereClauses.join(' AND ')}
       ORDER BY timestamp DESC
@@ -289,7 +291,11 @@ export class LogsMetricsService {
     const total = parseInt(countData.data[0].total, 10);
 
     return {
-      data,
+      data: data.map((item: any) => ({
+        ...item,
+        request_body: tryParseJson(item.request_body),
+        response_body: tryParseJson(item.response_body),
+      })),
       pagination: {
         total,
         page,
@@ -314,5 +320,15 @@ export class LogsMetricsService {
     const result = await this.clickhouse.query({ query });
     const data = (await result.json()).data;
     return data.map((item: any) => item.action);
+  }
+}
+
+function tryParseJson(jsonString: string | null): string | null {
+  if (!jsonString) return null;
+  try {
+    // Возвращаем строку с красивым форматированием
+    return JSON.stringify(JSON.parse(jsonString), null, 2);
+  } catch {
+    return jsonString;
   }
 }

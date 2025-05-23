@@ -1,4 +1,3 @@
-// features/auth/password/api/password.api.ts
 import { apiClient } from '@/shared/lib/utils/api-client'
 
 export const passwordApi = {
