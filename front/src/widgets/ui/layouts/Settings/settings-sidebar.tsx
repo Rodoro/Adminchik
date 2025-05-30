@@ -18,7 +18,6 @@ import { commonSidebarContent, settingsSidebarContent } from "@/widgets/content/
 
 export function SettingsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
-  // TODO: Данные пользователя из сессии
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

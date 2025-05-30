@@ -29,8 +29,8 @@ import { PermissionBadges } from "../types/permission.types";
 import { ConfirmModal } from "@/shared/ui/overlay/ConfirmModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/branding/avatar";
 import { getMediaSource } from "@/shared/lib/utils/get-media-source";
+import { appSidebarContent } from "@/widgets/content/sidebar-content";
 
-//TODO: Система проектов
 //TODO: Гварды на права и на проекты как в беке так и во фронте
 
 export function StaffTable() {
@@ -159,9 +159,17 @@ export function StaffTable() {
                 const projects = row.getValue("projects") as string[];
                 return (
                     <div className="flex flex-wrap gap-1">
-                        {projects?.map(project => (
-                            <Badge key={project} variant="secondary">{project}</Badge>
-                        ))}
+                        {projects?.map(project => {
+                            const team = appSidebarContent.teams.find(t => t.name === project);
+                            const LogoIcon = team?.logo;
+
+                            return (
+                                <Badge key={project} variant="secondary" className="flex items-center gap-1">
+                                    {LogoIcon && <LogoIcon className="h-3 w-3" />}
+                                    {project}
+                                </Badge>
+                            );
+                        })}
                     </div>
                 );
             },
@@ -193,7 +201,7 @@ export function StaffTable() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => router.push(`/adminchik/staff/edit/${staff.id}`)}
+                            onClick={(e) => { e.stopPropagation(); router.push(`/adminchik/staff/edit/${staff.id}`) }}
                         >
                             <Edit className="h-4 w-4" />
                         </Button>
@@ -202,7 +210,7 @@ export function StaffTable() {
                             message={`Вы уверены, что хотите удалить сотрудника ${staff.displayName}? Это действие нельзя отменить.`}
                             onConfirm={handleDelete}
                         >
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                                 <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>
                         </ConfirmModal>

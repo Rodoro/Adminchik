@@ -54,4 +54,11 @@ export class UpdateStaffDto {
     })
     @IsArray({ message: 'Права доступа должны быть массивом чисел' })
     permissions: number[];
+
+    @ApiProperty({
+        example: ['Проект1', 'Проект2'],
+        description: 'Массив проектов администратора',
+    })
+    @IsArray({ message: 'Права доступа должны быть массивом Строк' })
+    projects: string[]
 }

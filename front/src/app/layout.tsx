@@ -24,7 +24,15 @@ export const metadata: Metadata = {
     description: 'Это админ панель от GravityNode для управления всем миром.',
     url: 'https://nimda.gravity.ru',
     siteName: 'Adminchik',
-    // TODO: Добавить картинку
+    images: [
+      {
+        url: 'https://nimda.gravity.ru/og.png',
+        secureUrl: 'https://nimda.gravity.ru/og.png',
+        width: 1200,
+        height: 630,
+        alt: "Preview image for Dan Mugh's Blog",
+      },
+    ],
     locale: 'ru_RU',
     type: 'website',
   },

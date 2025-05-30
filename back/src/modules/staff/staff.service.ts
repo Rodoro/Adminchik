@@ -166,7 +166,7 @@ export class StaffService {
     ): Promise<void> {
         await this.checkPermission(requesterId, Permission.MANAGE_STAFF);
 
-        const { displayName, email, firstName, lastName, midleName, permissions, bio } = updateStaffDto;
+        const { displayName, email, firstName, lastName, midleName, permissions, projects, bio } = updateStaffDto;
 
         const staff = await this.prismaService.staff.findUnique({
             where: { id: staffId },
@@ -209,7 +209,8 @@ export class StaffService {
                 lastName,
                 midleName: midleName || null,
                 bio: bio || null,
-                permissions: permissionsBitString
+                permissions: permissionsBitString,
+                projects
             }
         });
 
